@@ -39,6 +39,7 @@ class GenomeXVM:
         self.program = []
         self.pc = 0
         self.running = False
+        self.max_cycles = 100000
 
     def load_program(self, dna_file):
         with open(dna_file, 'r') as f:
@@ -64,10 +65,16 @@ class GenomeXVM:
     def run(self):
         self.running = True
         self.pc = 0
+        cycles = 0
 
         while self.running:
             if self.pc >= len(self.program):
+                self.running = False
                 break
+
+            cycles += 1
+            if cycles > self.max_cycles:
+                raise RuntimeError(f"Cycle limit exceeded ({self.max_cycles})")
 
             instr = self.program[self.pc]
             opcode, dst, src, imm = self.decode(instr)
@@ -142,9 +149,9 @@ class GenomeXVM:
 
 def main():
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    challenge_dir = os.path.join(base_dir, 'challenge')
+    challenge_dir = os.path.join(base_dir, 'Challenge')
 
-    print("=== GenomeX VM Solver ===\n")
+    print("=== Helix Exo Solver ===\n")
 
     print("[1/4] Loading challenge files...")
     vm = GenomeXVM()
