@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""GenomeX VM — Reference Solution
+"""Helix Exo — Reference Solution
 
-Reconstructs the VM, executes the DNA program, and recovers the flag.
+Reconstructs the Exo-VM, executes the DNA program, and recovers the flag.
 
 Usage:
     python solve.py
@@ -9,7 +9,6 @@ Usage:
 
 import os
 import sys
-import zipfile
 
 
 BASE_MAP = {'A': '00', 'C': '01', 'G': '10', 'T': '11'}
@@ -153,30 +152,20 @@ def main():
 
     print("=== Helix Exo Solver ===\n")
 
-    print("[1/4] Loading challenge files...")
+    print("[1/3] Loading challenge files...")
     vm = GenomeXVM()
     vm.load_program(os.path.join(challenge_dir, 'program.dna'))
     vm.load_memory(os.path.join(challenge_dir, 'memory.bin'))
 
-    print("\n[2/4] Executing DNA program...")
+    print("\n[2/3] Executing DNA program...")
     vm.run()
     print(f"  PC: {vm.pc}  |  R0: {vm.registers[0]:#04x}  R1: {vm.registers[1]:#04x}  "
           f"R2: {vm.registers[2]:#04x}  R3: {vm.registers[3]:#04x}")
 
-    print("\n[3/4] Extracting flag from memory...")
+    print("\n[3/3] Extracting flag from memory...")
     flag_bytes = bytes([vm.memory[i] for i in range(0x50, 0x6E)])
     flag = flag_bytes.decode('ascii', errors='replace')
     print(f"  Flag: {flag}")
-
-    print("\n[4/4] Decrypting vault.zip...")
-    vault_path = os.path.join(challenge_dir, 'vault.zip')
-    if os.path.exists(vault_path):
-        xor_key = vm.memory[0x40]
-        with zipfile.ZipFile(vault_path, 'r') as zf:
-            with zf.open('flag.bin') as f:
-                encrypted = f.read()
-            decrypted = bytes([b ^ xor_key for b in encrypted])
-            print(f"  Vault flag: {decrypted.decode('ascii', errors='replace')}")
 
     print(f"\n{'='*50}")
     print(f"FLAG: {flag}")
